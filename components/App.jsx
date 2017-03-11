@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 
-const App = React.createClass({
+const App = React.createClass({ // eslint-disable-line
+  propTypes: {
+    children: PropTypes.object.isRequired,
+  },
+
   render() {
     return (
       <div>

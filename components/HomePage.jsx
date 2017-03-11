@@ -1,6 +1,11 @@
 import React from 'react';
 import Carto from '../helpers/Carto';
 
+const dummyPoint = {  // dummy point for hover layer
+  type: 'Point',
+  coordinates: [0, 0],
+};
+
 const HomePage = React.createClass({
   getInitialState() {
     return ({
@@ -20,18 +25,28 @@ const HomePage = React.createClass({
       hash: true,
     });
 
-    Carto.getNamedMapTileUrl('pluto16v2')
-      .then((tileUrl) => {
-        self.addPlutoLayer(tileUrl);
-      });
+    this.map.addControl(new mapboxgl.Navigation({ position: 'bottom-right' })); // eslint-disable-line no-undef
+
+    this.map.on('load', () => {
+      Carto.getNamedMapTileUrl('pluto16v2')
+        .then((tileUrl) => {
+          self.addPlutoLayer(tileUrl);
+        });
+    });
   },
 
   addPlutoLayer(tileUrl) {
-    console.log(this.map.getStyle());
+    const self = this;
+
     this.map.addSource('pluto', {
       type: 'vector',
       tiles: [tileUrl],
       minzoom: 12,
+    });
+
+    this.map.addSource('pluto-hover', {
+      type: 'geojson',
+      data: dummyPoint,
     });
 
     this.map.addLayer({
@@ -54,11 +69,11 @@ const HomePage = React.createClass({
         'fill-outline-color': {
           stops: [
             [
-              15,
+              16,
               'rgba(247, 247, 247, 0)',
             ],
             [
-              16,
+              17,
               'rgba(247, 247, 247, 1)',
             ],
           ],
@@ -66,12 +81,64 @@ const HomePage = React.createClass({
         'fill-antialias': true,
       },
     }, 'waterway');
+
+    this.map.addLayer({
+      id: 'pluto-hover',
+      source: 'pluto-hover',
+      'source-layer': 'layer0',
+      type: 'fill',
+      paint: {
+        'fill-color': 'rgba(228, 254, 19, 1)',
+        'fill-opacity': 0.7,
+        'fill-antialias': true,
+      },
+    }, 'waterway');
+
+    this.map.on('mousemove', (e) => {
+      this.moveTooltip(e);
+
+      const features = this.map.queryRenderedFeatures(e.point, { layers: ['pluto'] });
+      this.map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+
+      if (features.length) {
+        self.map.getSource('pluto-hover').setData(features[0]);
+        self.showTooltip(features[0].properties.address);
+      } else {
+        self.map.getSource('pluto-hover').setData(dummyPoint);
+        self.hideTooltip();
+      }
+    });
+
+    this.map.on('dragstart', this.hideTooltip);
+
+    // Reset the state-fills-hover layer's filter when the mouse leaves the map
+    // this.map.on('mouseout', () => {
+    //   this.map.setFilter('pluto-hover', ['==', 'cartodb_id', '']);
+    // });
+  },
+
+  showTooltip(text) {
+    $('#tooltip').text(text).stop().css('opacity', 1) // eslint-disable-line no-undef
+      .css('display', 'initial');
+  },
+
+  hideTooltip() {
+    $('#tooltip').stop().fadeOut(100); // eslint-disable-line no-undef
+  },
+
+  moveTooltip(e) {
+    const event = e.originalEvent;
+
+    $('#tooltip') // eslint-disable-line no-undef
+      .css('top', event.clientY - 15)
+      .css('left', event.clientX + 40);
   },
 
   render() {
     return (
       <div className="main-container">
         <div id="mapContainer" />
+        <div id="tooltip">Tooltip</div>
       </div>
     );
   },

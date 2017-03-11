@@ -3,7 +3,7 @@ const Carto = {
     return new Promise((resolve, reject) => {
       $.ajax({ // eslint-disable-line no-undef
         type: 'POST',
-        url: 'https://cwhong.carto.com/api/v1/map/named/pluto16v2',
+        url: `https://cwhong.carto.com/api/v1/map/named/${template_name}`,
         contentType: 'application/json',
         success(data) {
           const layergroupid = data.layergroupid;
