@@ -1,19 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import {Router, Route, browserHistory} from 'react-router'
-import App from './components/App.jsx'
-import TaxLotContainer from './components/TaxLotContainer.jsx'
-import { createHistory, useBasename } from 'history'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 
-const history = useBasename(createHistory)({
-  basename: null
-})
+import App from './components/App';
+import TaxLotContainer from './components/TaxLotContainer';
+import HomePage from './components/HomePage';
+
 
 ReactDOM.render(
   <Router history={browserHistory}>
     <Route path="/" component={App}>
-      <Route path="lotprofiles/:boro/:block/:lot"  component={TaxLotContainer}/>
-    </Route>  
+      <IndexRoute component={HomePage} />
+      <Route path="lotprofiles/:boro/:block/:lot" component={TaxLotContainer} />
+    </Route>
   </Router>,
-  document.getElementById('root')
-)
+  document.getElementById('root'),
+);
