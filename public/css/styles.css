@@ -20,5 +20,17 @@ html, body {
   top: 0;
   left: 0;
   background: #fff;
-  padding: 10px;  
+  padding: 10px;
+  display: none;
+}
+
+.lot-profile {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  background: rgba(125, 125, 125, 0.59);
+  color: white;
+  padding: 20px;
 }

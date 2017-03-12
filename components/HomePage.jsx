@@ -18,7 +18,7 @@ const HomePage = React.createClass({
 
     this.map = new mapboxgl.Map({ // eslint-disable-line no-undef
       container: 'mapContainer',
-      style: 'data/style.json',
+      style: '/data/style.json',
       center: [-74.0001, 40.7067],
       zoom: 13.24,
       minZoom: 13,
@@ -109,12 +109,27 @@ const HomePage = React.createClass({
       }
     });
 
+    this.map.on('click', (e) => {
+      const features = this.map.queryRenderedFeatures(e.point, { layers: ['pluto'] });
+      if (features.length) self.routeToBbl(features[0].properties.bbl.toString());
+    });
+
     this.map.on('dragstart', this.hideTooltip);
 
     // Reset the state-fills-hover layer's filter when the mouse leaves the map
     // this.map.on('mouseout', () => {
     //   this.map.setFilter('pluto-hover', ['==', 'cartodb_id', '']);
     // });
+  },
+
+  routeToBbl(bbl) {
+    console.log(bbl)
+    const boro = bbl.substring(0, 1);
+    const block = bbl.substring(1, 6);
+    const lot = bbl.substring(6, 10);
+    console.log(boro, block, lot);
+
+    this.props.history.push(`/bbl/${boro}/${block}/${lot}`);
   },
 
   showTooltip(text) {

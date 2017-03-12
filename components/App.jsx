@@ -1,15 +1,22 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+
+import {
+  BrowserRouter as Router,
+  Route,
+} from 'react-router-dom';
+
+import HomePage from './HomePage';
+import LotProfile from './LotProfile';
 
 const App = React.createClass({ // eslint-disable-line
-  propTypes: {
-    children: PropTypes.object.isRequired,
-  },
-
   render() {
     return (
-      <div>
-        {this.props.children}
-      </div>
+      <Router>
+        <div>
+          <Route path="/" component={HomePage} />
+          <Route path="/bbl/:boro/:block/:lot" component={LotProfile} />
+        </div>
+      </Router>
     );
   },
 });
