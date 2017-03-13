@@ -26,7 +26,9 @@ const LotProfile = React.createClass({
         bbl: this.urlToBBL(nextProps.match.url),
         data: null,
       }, () => {
-        self.getBBLData(this.state.bbl);
+        setTimeout(() => {
+          self.getBBLData(this.state.bbl);
+        }, 450);
       });
     }
   },
