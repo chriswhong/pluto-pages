@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   width: 100%;
+  font-family: 'Roboto', sans-serif;
 }
 
 .navbar {
@@ -30,7 +31,61 @@ html, body {
   right: 0;
   bottom: 0;
   width: 320px;
-  background: rgba(125, 125, 125, 0.59);
-  color: white;
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px 15px;
+  overflow: hidden;
+  z-index: 10;
+  transform: translate(320px, 0px);
+  transition: transform .45s cubic-bezier(.23,1,.32,1) 0ms;
+}
+
+
+
+.lot-profile .header {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 20px;
+  padding-top: 12px;
+}
+
+.lot-profile .header h3 {
+  margin: 0;
+  padding-left: 14px;
+  padding-top: 12px;
+}
+
+.lot-profile .header p {
+  margin: 0;
+  color: #7486c7;
+  font-family: 'Cambay', sans-serif;
+  font-size: 16px;
+}
+
+.lot-profile .attribute-list {
+  position: absolute;
+  top: 104px;
+  overflow: scroll;
+  bottom: 0;
+  right: 15px;
+  left: 15px;
+}
+
+.lot-profile .attribute-list-item {
+  border-bottom: 1px solid #ccc;
+  padding-top: 3px;
+  padding-bottom: 5px;
+}
+
+.lot-profile .attribute-list-item .key {
+  font-family: 'Cambay', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  margin-bottom: 0;
+  color: #6f82c5;
+}
+
+.lot-profile .attribute-list-item .value {
+  margin-bottom: 0;
+  font-size: 18px;
+  padding-left: 24px;
 }

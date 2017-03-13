@@ -25,7 +25,7 @@ const HomePage = React.createClass({
       hash: true,
     });
 
-    this.map.addControl(new mapboxgl.Navigation({ position: 'bottom-right' })); // eslint-disable-line no-undef
+    this.map.addControl(new mapboxgl.Navigation({ position: 'bottom-left' })); // eslint-disable-line no-undef
 
     this.map.on('load', () => {
       Carto.getNamedMapTileUrl('pluto16v2')
@@ -123,11 +123,9 @@ const HomePage = React.createClass({
   },
 
   routeToBbl(bbl) {
-    console.log(bbl)
     const boro = bbl.substring(0, 1);
     const block = bbl.substring(1, 6);
     const lot = bbl.substring(6, 10);
-    console.log(boro, block, lot);
 
     this.props.history.push(`/bbl/${boro}/${block}/${lot}`);
   },

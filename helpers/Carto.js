@@ -14,6 +14,28 @@ const Carto = {
       .fail(() => reject());
     });
   },
+
+  generateUrlString(sql, format, filename = 'download') {
+    const apiString = `https://cwhong.carto.com/api/v2/sql?q=${sql}&format=${format}&filename=${filename}`;
+    return encodeURI(apiString);
+  },
+
+  SQL(sql, format) {
+    format = format || 'geojson';
+    const apiCall = this.generateUrlString(sql, format);
+
+    return new Promise((resolve, reject) => {
+      $.getJSON(apiCall) // eslint-disable-line no-undef
+        .done((data) => {
+          if (format === 'geojson') {
+            resolve(data);
+          } else {
+            resolve(data.rows);
+          }
+        })
+        .fail(() => reject());
+    });
+  },
 };
 
 export default Carto;
