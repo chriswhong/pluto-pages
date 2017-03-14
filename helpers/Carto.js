@@ -7,7 +7,7 @@ const Carto = {
         contentType: 'application/json',
         success(data) {
           const layergroupid = data.layergroupid;
-          const template = `https://cwhong.carto.com/api/v1/map/${layergroupid}/0/{z}/{x}/{y}.mvt`;
+          const template = `https://cwhong.carto.com/api/v1/map/${layergroupid}/0/{z}/{x}/{y}.png`;
           resolve(template);
         },
       })

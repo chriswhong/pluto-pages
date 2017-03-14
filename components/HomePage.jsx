@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+import bbox from '@turf/bbox';
 import Carto from '../helpers/Carto';
 
 const dummyPoint = {  // dummy point for hover layer
@@ -7,6 +8,12 @@ const dummyPoint = {  // dummy point for hover layer
 };
 
 const HomePage = React.createClass({
+
+  propTypes: {
+    history: PropTypes.object.isRequired,
+    location: PropTypes.object.isRequired,
+  },
+
   getInitialState() {
     return ({
       data: {},
@@ -21,7 +28,7 @@ const HomePage = React.createClass({
       style: '/data/style.json',
       center: [-74.0001, 40.7067],
       zoom: 13.24,
-      minZoom: 13,
+      minZoom: 10,
       hash: true,
     });
 
@@ -30,18 +37,39 @@ const HomePage = React.createClass({
     this.map.on('load', () => {
       Carto.getNamedMapTileUrl('pluto16v2')
         .then((tileUrl) => {
-          self.addPlutoLayer(tileUrl);
+          self.addPlutoVectorLayer(tileUrl);
+          self.addPlutoRasterLayer(tileUrl);
         });
+
+      const split = this.props.location.pathname.split('/');
+      if (split[1] === 'bbl') {
+        const bbl = `${split[2]}${split[3]}${split[4]}`;
+        this.highlightBBL(bbl, true);
+      }
     });
   },
 
-  addPlutoLayer(tileUrl) {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.location.pathname !== this.props.location.pathname) {
+      this.map.removeLayer('highlighted');
+      this.map.removeSource('highlighted');
+
+      // const split = nextProps.location.pathname.split('/');
+      // if (split[1] === 'bbl') {
+      //   const bbl = `${split[2]}${split[3]}${split[4]}`;
+      //   this.highlightBBL(bbl, false);
+      // }
+    }
+  },
+
+  addPlutoVectorLayer(tileUrl) {
+    const vectorTileUrl = `${tileUrl.split('.png')[0]}.mvt`;
     const self = this;
 
     this.map.addSource('pluto', {
       type: 'vector',
-      tiles: [tileUrl],
-      minzoom: 12,
+      tiles: [vectorTileUrl],
+      minzoom: 14,
     });
 
     this.map.addSource('pluto-hover', {
@@ -56,7 +84,7 @@ const HomePage = React.createClass({
       type: 'fill',
       paint: {
         'fill-color': {
-          property: 'type',
+          property: 'displaytype',
           stops: [
             [0, 'rgba(67, 114, 222, 1)'],
             [1, 'rgba(56, 98, 193, 1)'],
@@ -65,7 +93,18 @@ const HomePage = React.createClass({
             [4, 'rgba(34, 60, 119, 1)'],
           ],
         },
-        'fill-opacity': 0.7,
+        'fill-opacity': {
+          stops: [
+            [
+              14,
+              0,
+            ],
+            [
+              15,
+              0.7,
+            ],
+          ],
+        },
         'fill-outline-color': {
           stops: [
             [
@@ -86,11 +125,10 @@ const HomePage = React.createClass({
       id: 'pluto-hover',
       source: 'pluto-hover',
       'source-layer': 'layer0',
-      type: 'fill',
+      type: 'line',
       paint: {
-        'fill-color': 'rgba(228, 254, 19, 1)',
-        'fill-opacity': 0.7,
-        'fill-antialias': true,
+        'line-color': 'rgba(228, 254, 19, 1)',
+        'line-width': 3,
       },
     }, 'waterway');
 
@@ -111,7 +149,11 @@ const HomePage = React.createClass({
 
     this.map.on('click', (e) => {
       const features = this.map.queryRenderedFeatures(e.point, { layers: ['pluto'] });
-      if (features.length) self.routeToBbl(features[0].properties.bbl.toString());
+      if (features.length) {
+        const feature = features[0];
+        self.routeToBbl(feature.properties.bbl.toString());
+        self.addHighlighted(feature);
+      }
     });
 
     this.map.on('dragstart', this.hideTooltip);
@@ -120,6 +162,35 @@ const HomePage = React.createClass({
     // this.map.on('mouseout', () => {
     //   this.map.setFilter('pluto-hover', ['==', 'cartodb_id', '']);
     // });
+  },
+
+  addPlutoRasterLayer(tileUrl) {
+    this.map.addSource('pluto-raster', {
+      type: 'raster',
+      tiles: [tileUrl],
+      tileSize: 256,
+    });
+
+    this.map.addLayer({
+      id: 'pluto-raster',
+      type: 'raster',
+      source: 'pluto-raster',
+      maxzoom: 15,
+      paint: {
+        'raster-opacity': {
+          stops: [
+            [
+              14,
+              1,
+            ],
+            [
+              15,
+              0,
+            ],
+          ],
+        },
+      },
+    }, 'waterway');
   },
 
   routeToBbl(bbl) {
@@ -137,6 +208,43 @@ const HomePage = React.createClass({
 
   hideTooltip() {
     $('#tooltip').stop().fadeOut(100); // eslint-disable-line no-undef
+  },
+
+  highlightBBL(bbl, fitBounds) {
+    const self = this;
+
+    Carto.SQL(`SELECT the_geom from pluto16v2 WHERE bbl = ${bbl}`)
+      .then((data) => {
+        const feature = data.features[0];
+
+        if (fitBounds) {
+          self.map.fitBounds(bbox(feature), {
+            padding: 300,
+            offset: [-160, 0],
+          });
+        }
+
+        self.addHighlighted(feature);
+      });
+  },
+
+  addHighlighted(feature) {
+    this.map.addSource('highlighted', {
+      type: 'geojson',
+      data: feature,
+    });
+
+    this.map.addLayer({
+      id: 'highlighted',
+      source: 'highlighted',
+      type: 'fill',
+      paint: {
+        'fill-outline-color': 'orange',
+        'fill-color': 'orange',
+        'fill-opacity': 0.7,
+        'fill-antialias': true,
+      },
+    });
   },
 
   moveTooltip(e) {

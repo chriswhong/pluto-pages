@@ -49,7 +49,6 @@ const LotProfile = React.createClass({
 
   render() {
     const d = this.state.data;
-    console.log(d);
 
     const attributeList = [];
 
