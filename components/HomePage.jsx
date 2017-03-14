@@ -51,8 +51,9 @@ const HomePage = React.createClass({
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.location.pathname !== this.props.location.pathname) {
-      this.map.removeLayer('highlighted');
-      this.map.removeSource('highlighted');
+      if (this.map.getLayer('highlighted')) this.map.removeLayer('highlighted');
+      if (this.map.getSource('highlighted')) this.map.removeSource('highlighted');
+
 
       // const split = nextProps.location.pathname.split('/');
       // if (split[1] === 'bbl') {
@@ -219,7 +220,7 @@ const HomePage = React.createClass({
 
         if (fitBounds) {
           self.map.fitBounds(bbox(feature), {
-            padding: 300,
+            padding: 200,
             offset: [-160, 0],
           });
         }
