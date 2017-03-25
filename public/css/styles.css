@@ -89,3 +89,77 @@ html, body {
   font-size: 18px;
   padding-left: 24px;
 }
+
+.title-banner {
+  z-index: 10;
+  position: absolute;
+  top: 15px;
+  left: 0;
+  color: #2c4786;
+  padding: 6px 24px;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.title-banner h2 {
+  margin: 0;
+  font-size: 34px;
+  margin-bottom: 2px;
+}
+
+.title-banner p {
+  margin: 0;
+  font-size: 11px;
+}
+
+.toast {
+  background: rgba(255, 255, 255, 0.95);
+  position: absolute;
+  z-index: 10;
+  padding: 6px 34px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  bottom: 0;
+}
+
+.toast p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 10px;
+  margin-top: 2px;
+}
+
+.react-autosuggest__container {
+  z-index: 10;
+  position: absolute;
+  top: 95px;
+  background: rgba(255, 255, 255, 0.95);
+  height: 36px;
+}
+
+.react-autosuggest__container input {
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  height: 36px;
+  width: 355px;
+  padding: 0 10px;
+}
+
+.react-autosuggest__container input:focus {
+  outline-width: 0
+}
+
+.react-autosuggest__container ul {
+  list-style-type: none;
+  padding: 0 10px;
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid #ddd;
+}
+
+.react-autosuggest__container ul:hover {
+  cursor: pointer;
+}
+
+.react-autosuggest__container li {
+  padding: 8px 0px;
+}

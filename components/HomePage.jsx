@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react';
 import bbox from '@turf/bbox';
+import SearchWidget from './SearchWidget';
+
 import Carto from '../helpers/Carto';
 
 const dummyPoint = {  // dummy point for hover layer
@@ -17,6 +19,7 @@ const HomePage = React.createClass({
   getInitialState() {
     return ({
       data: {},
+      zoom: 13.24,
     });
   },
 
@@ -32,7 +35,11 @@ const HomePage = React.createClass({
       hash: true,
     });
 
-    this.map.addControl(new mapboxgl.Navigation({ position: 'bottom-left' })); // eslint-disable-line no-undef
+    this.map.addControl(new mapboxgl.NavigationControl({ position: 'bottom-left' })); // eslint-disable-line no-undef
+
+    this.map.on('zoomend', () => {
+      self.setState({ zoom: self.map.getZoom() });
+    });
 
     this.map.on('load', () => {
       Carto.getNamedMapTileUrl('pluto16v2')
@@ -86,12 +93,13 @@ const HomePage = React.createClass({
       paint: {
         'fill-color': {
           property: 'displaytype',
+          type: 'categorical',
           stops: [
-            [0, 'rgba(67, 114, 222, 1)'],
-            [1, 'rgba(56, 98, 193, 1)'],
-            [2, 'rgba(48, 85, 167, 1)'],
-            [3, 'rgba(41, 72, 142, 1)'],
-            [4, 'rgba(34, 60, 119, 1)'],
+            ['0', 'rgba(67, 114, 222, 1)'],
+            ['1', 'rgba(56, 98, 193, 1)'],
+            ['2', 'rgba(48, 85, 167, 1)'],
+            ['3', 'rgba(41, 72, 142, 1)'],
+            ['4', 'rgba(34, 60, 119, 1)'],
           ],
         },
         'fill-opacity': {
@@ -125,7 +133,6 @@ const HomePage = React.createClass({
     this.map.addLayer({
       id: 'pluto-hover',
       source: 'pluto-hover',
-      'source-layer': 'layer0',
       type: 'line',
       paint: {
         'line-color': 'rgba(228, 254, 19, 1)',
@@ -256,9 +263,57 @@ const HomePage = React.createClass({
       .css('left', event.clientX + 40);
   },
 
+  setMarker(geojson) {
+    if (this.map.getSource('marker')) this.map.removeSource('marker');
+    if (this.map.getLayer('marker')) this.map.removeLayer('marker');
+
+    this.map.addSource('marker', {
+      type: 'geojson',
+      data: geojson,
+    });
+
+    this.map.addLayer({
+      id: 'marker',
+      source: 'marker',
+      type: 'circle',
+      paint: {
+        'circle-radius': 10,
+        'circle-color': 'rgba(204, 255, 0, 1)',
+        'circle-stroke-width': 1,
+        'circle-opacity': 0.8,
+        'circle-stroke-color': 'rgba(179, 179, 179, 1)',
+      },
+    });
+
+
+    this.map.flyTo({
+      center: geojson.geometry.coordinates,
+      zoom: 18,
+      speed: 0.5,
+    });
+  },
+
   render() {
+    const { zoom } = this.state;
+
+    const toastMessage = (zoom < 14) ?
+      <p>Zoom in to select a lot</p> :
+      <p>Click a lot to view data</p>;
+
     return (
       <div className="main-container">
+        <div className="title-banner">
+          <h2>Pluto Pages</h2>
+          <p>NYC property data at your fingertips</p>
+        </div>
+
+        <SearchWidget
+          onSelection={(selection) => { this.setMarker(selection); }}
+        />
+
+        <div className="toast">
+          { toastMessage }
+        </div>
         <div id="mapContainer" />
         <div id="tooltip">Tooltip</div>
       </div>
