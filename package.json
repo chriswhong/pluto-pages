@@ -11,6 +11,10 @@
   },
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "7.5.0",
+    "npm": "4.1.2"
+  },
   "dependencies": {
     "@turf/bbox": "^3.13.0",
     "babel-core": "^6.23.1",
