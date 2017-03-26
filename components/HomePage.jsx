@@ -26,6 +26,7 @@ const HomePage = React.createClass({
   componentDidMount() {
     const self = this;
 
+    mapboxgl.accessToken = process.env.MAPBOX_ACCESSTOKEN; // eslint-disable-line
     this.map = new mapboxgl.Map({ // eslint-disable-line no-undef
       container: 'mapContainer',
       style: '/data/style.json',
@@ -60,14 +61,37 @@ const HomePage = React.createClass({
     if (nextProps.location.pathname !== this.props.location.pathname) {
       if (this.map.getLayer('highlighted')) this.map.removeLayer('highlighted');
       if (this.map.getSource('highlighted')) this.map.removeSource('highlighted');
-
-
-      // const split = nextProps.location.pathname.split('/');
-      // if (split[1] === 'bbl') {
-      //   const bbl = `${split[2]}${split[3]}${split[4]}`;
-      //   this.highlightBBL(bbl, false);
-      // }
     }
+  },
+
+  setMarker(geojson) {
+    if (this.map.getSource('marker')) this.map.removeSource('marker');
+    if (this.map.getLayer('marker')) this.map.removeLayer('marker');
+
+    this.map.addSource('marker', {
+      type: 'geojson',
+      data: geojson,
+    });
+
+    this.map.addLayer({
+      id: 'marker',
+      source: 'marker',
+      type: 'circle',
+      paint: {
+        'circle-radius': 10,
+        'circle-color': 'rgba(204, 255, 0, 1)',
+        'circle-stroke-width': 1,
+        'circle-opacity': 0.8,
+        'circle-stroke-color': 'rgba(179, 179, 179, 1)',
+      },
+    });
+
+
+    this.map.flyTo({
+      center: geojson.geometry.coordinates,
+      zoom: 18,
+      speed: 0.5,
+    });
   },
 
   addPlutoVectorLayer(tileUrl) {
@@ -104,26 +128,14 @@ const HomePage = React.createClass({
         },
         'fill-opacity': {
           stops: [
-            [
-              14,
-              0,
-            ],
-            [
-              15,
-              0.7,
-            ],
+            [14, 0],
+            [15, 0.7],
           ],
         },
         'fill-outline-color': {
           stops: [
-            [
-              16,
-              'rgba(247, 247, 247, 0)',
-            ],
-            [
-              17,
-              'rgba(247, 247, 247, 1)',
-            ],
+            [16, 'rgba(247, 247, 247, 0)'],
+            [17, 'rgba(247, 247, 247, 1)'],
           ],
         },
         'fill-antialias': true,
@@ -263,42 +275,12 @@ const HomePage = React.createClass({
       .css('left', event.clientX + 40);
   },
 
-  setMarker(geojson) {
-    if (this.map.getSource('marker')) this.map.removeSource('marker');
-    if (this.map.getLayer('marker')) this.map.removeLayer('marker');
-
-    this.map.addSource('marker', {
-      type: 'geojson',
-      data: geojson,
-    });
-
-    this.map.addLayer({
-      id: 'marker',
-      source: 'marker',
-      type: 'circle',
-      paint: {
-        'circle-radius': 10,
-        'circle-color': 'rgba(204, 255, 0, 1)',
-        'circle-stroke-width': 1,
-        'circle-opacity': 0.8,
-        'circle-stroke-color': 'rgba(179, 179, 179, 1)',
-      },
-    });
-
-
-    this.map.flyTo({
-      center: geojson.geometry.coordinates,
-      zoom: 18,
-      speed: 0.5,
-    });
-  },
-
   render() {
     const { zoom } = this.state;
 
     const toastMessage = (zoom < 14) ?
-      <p>Zoom in to select a lot</p> :
-      <p>Click a lot to view data</p>;
+      <p>Zoom in to select a tax lot</p> :
+      <p>Click a tax lot to view data</p>;
 
     return (
       <div className="main-container">

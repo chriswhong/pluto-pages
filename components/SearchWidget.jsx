@@ -15,7 +15,7 @@ function shouldRenderSuggestions(value) {
   return value.trim().length > 2;
 }
 
-const mapzen_api_key = 'mapzen-ZyMEp5H'
+const mapzen_api_key = process.env.MAPZEN_API_KEY;
 const bounds = {
   minLon: -74.292297,
   maxLon: -73.618011,
