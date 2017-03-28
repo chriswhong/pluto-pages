@@ -47,6 +47,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"',
+        MAPZEN_API_KEY: JSON.stringify(process.env.MAPZEN_API_KEY),
       },
     }),
   ],
