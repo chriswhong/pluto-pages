@@ -171,7 +171,7 @@ const HomePage = React.createClass({
       const features = this.map.queryRenderedFeatures(e.point, { layers: ['pluto'] });
       if (features.length) {
         const feature = features[0];
-        self.routeToBbl(feature.properties.bbl.toString());
+        self.routeToBbl(feature.properties.bbl.toString(), feature.properties.address);
         self.addHighlighted(feature);
       }
     });
@@ -213,12 +213,14 @@ const HomePage = React.createClass({
     }, 'waterway');
   },
 
-  routeToBbl(bbl) {
+  routeToBbl(bbl, address) {
     const boro = bbl.substring(0, 1);
     const block = bbl.substring(1, 6);
     const lot = bbl.substring(6, 10);
 
-    this.props.history.push(`/bbl/${boro}/${block}/${lot}`);
+    const slug = address.replace(/\s+/g, '-').toLowerCase();
+
+    this.props.history.push(`/bbl/${boro}/${block}/${lot}/${slug}`);
   },
 
   showTooltip(text) {

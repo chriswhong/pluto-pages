@@ -5,17 +5,20 @@ import Carto from '../helpers/Carto';
 const LotProfile = React.createClass({
   propTypes: {
     match: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
   },
 
   getInitialState() {
     return ({
       data: null,
       bbl: this.urlToBBL(this.props.match.url),
+      visible: false,
     });
   },
 
   componentDidMount() {
     this.getBBLData(this.state.bbl);
+    this.show();
   },
 
   componentWillReceiveProps(nextProps) {
@@ -47,8 +50,19 @@ const LotProfile = React.createClass({
     return `${urlParts[2]}${urlParts[3]}${urlParts[4]}`;
   },
 
+  show() {
+    setTimeout(() => { this.setState({ visible: true }); }, 50);
+  },
+
+  hide() {
+    this.setState({ visible: false }, () => {
+      setTimeout(() => { this.props.history.push('/'); }, 450);
+    });
+  },
+
   render() {
-    const d = this.state.data;
+    const { data, visible } = this.state;
+    const d = data;
 
     const attributeList = [];
 
@@ -69,9 +83,10 @@ const LotProfile = React.createClass({
       <div
         className="lot-profile"
         style={{
-          transform: d ? 'translate(0px, 0px)' : 'translate(320px, 0px)',
+          transform: visible ? 'translate(0px, 0px)' : 'translate(320px, 0px)',
         }}
       >
+        <div className="close-button" onClick={this.hide}>✖</div>
         { d && (
           <div className="header">
             <p>BBL {d.bbl}</p>

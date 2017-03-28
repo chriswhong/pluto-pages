@@ -39,18 +39,24 @@ html, body {
   transition: transform .45s cubic-bezier(.23,1,.32,1) 0ms;
 }
 
+.lot-profile .close-button {
+  font-size: 18px;
+}
 
+.lot-profile .close-button:hover {
+  cursor: pointer;
+}
 
 .lot-profile .header {
   border-bottom: 1px solid #ccc;
-  padding-bottom: 20px;
-  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-top: 3px;
 }
 
 .lot-profile .header h3 {
   margin: 0;
-  padding-left: 14px;
-  padding-top: 12px;
+  padding-top: 0px;
+  font-size: 19px;
 }
 
 .lot-profile .header p {
@@ -62,7 +68,7 @@ html, body {
 
 .lot-profile .attribute-list {
   position: absolute;
-  top: 104px;
+  top: 94px;
   overflow: scroll;
   bottom: 0;
   right: 15px;

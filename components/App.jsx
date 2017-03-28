@@ -14,7 +14,7 @@ const App = React.createClass({ // eslint-disable-line
       <Router>
         <div>
           <Route path="/" component={HomePage} />
-          <Route path="/bbl/:boro/:block/:lot" component={LotProfile} />
+          <Route path="/bbl/:boro/:block/:lot/:slug" component={LotProfile} />
         </div>
       </Router>
     );
