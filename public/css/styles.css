@@ -134,12 +134,42 @@ html, body {
   margin-top: 2px;
 }
 
-.react-autosuggest__container {
+.search-widget {
   z-index: 10;
   position: absolute;
   top: 95px;
   background: rgba(255, 255, 255, 0.95);
   height: 36px;
+  transition: transform .45s cubic-bezier(.23,1,.32,1) 0ms;
+}
+
+.search-widget .fa {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.menu-icon {
+  font-size: 18px;
+  height: 36px;
+  line-height: 36px;
+  width: 36px;
+  text-align: center;
+}
+
+.fa-github {
+  z-index: 10;
+  position: absolute;
+  top: 145px;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.search-widget .fa:hover {
+  cursor: pointer;
+}
+
+.react-autosuggest__container {
+
 }
 
 .react-autosuggest__container input {

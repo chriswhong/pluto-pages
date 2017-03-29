@@ -295,6 +295,8 @@ const HomePage = React.createClass({
           onSelection={(selection) => { this.setMarker(selection); }}
         />
 
+        <a href="//github.com/chriswhong/pluto-pages"><div className="fa fa-github menu-icon" /></a>
+
         <div className="toast">
           { toastMessage }
         </div>

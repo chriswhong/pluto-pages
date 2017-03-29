@@ -7,7 +7,7 @@ function getSuggestionValue(suggestion) {
 
 function renderSuggestion(suggestion) {
   return (
-    <div><i className="fa fa-map-marker" aria-hidden="true" /><span>{suggestion.properties.label}</span></div>
+    <div><span>{suggestion.properties.label}</span></div>
   );
 }
 
@@ -33,6 +33,7 @@ const SearchWidget = React.createClass({
     return {
       value: '',
       suggestions: [],
+      expanded: false,
     };
   },
 
@@ -69,6 +70,10 @@ const SearchWidget = React.createClass({
     this.props.onSelection(o.suggestion);
   },
 
+  toggleExpanded() {
+    this.setState({ expanded: !this.state.expanded });
+  },
+
   render() {
     const inputProps = {
       placeholder: 'Search for an address',
@@ -76,17 +81,29 @@ const SearchWidget = React.createClass({
       onChange: this.onChange,
     };
 
+    const { expanded } = this.state;
+
+    const style = {
+      transform: expanded ? 'translate(0,0)' : 'translate(-320px,0)',
+    };
+
+    const icon = expanded ? <div className="fa fa-close menu-icon" onClick={this.toggleExpanded} /> :
+    <div className="fa fa-search menu-icon" onClick={this.toggleExpanded} />;
+
     return (
-      <Autosuggest
-        suggestions={this.state.suggestions}
-        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-        getSuggestionValue={getSuggestionValue}
-        renderSuggestion={renderSuggestion}
-        shouldRenderSuggestions={shouldRenderSuggestions}
-        inputProps={inputProps}
-        onSuggestionSelected={this.onSuggestionSelected}
-      />
+      <div className="search-widget" style={style}>
+        <Autosuggest
+          suggestions={this.state.suggestions}
+          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+          getSuggestionValue={getSuggestionValue}
+          renderSuggestion={renderSuggestion}
+          shouldRenderSuggestions={shouldRenderSuggestions}
+          inputProps={inputProps}
+          onSuggestionSelected={this.onSuggestionSelected}
+        />
+        {icon}
+      </div>
     );
   },
 });
