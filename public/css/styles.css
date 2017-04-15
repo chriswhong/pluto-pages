@@ -99,7 +99,7 @@ html, body {
 .title-banner {
   z-index: 10;
   position: absolute;
-  top: 15px;
+  top: 10px;
   left: 0;
   color: #2c4786;
   padding: 6px 24px;
@@ -136,16 +136,17 @@ html, body {
 
 .search-widget {
   z-index: 10;
-  position: absolute;
   top: 95px;
   background: rgba(255, 255, 255, 0.95);
   height: 36px;
   transition: transform .45s cubic-bezier(.23,1,.32,1) 0ms;
+  margin-bottom: 10px;
+  width: 320px;
 }
 
 .search-widget .fa {
   position: absolute;
-  right: 0;
+  left: 320px;
   top: 0;
 }
 
@@ -155,21 +156,32 @@ html, body {
   line-height: 36px;
   width: 36px;
   text-align: center;
+  color: #337ab7;
+  background: rgba(255, 255, 255, 0.95);
+  margin-bottom: 10px;
 }
 
-.fa-github {
+.button-pane {
+  position: absolute;
+  top: 87px;
+  z-index: 10;
+  width: 36px;
+}
+
+/*.fa-github {
   z-index: 10;
   position: absolute;
   top: 145px;
-  background: rgba(255, 255, 255, 0.95);
-}
+}*/
 
-.search-widget .fa:hover {
+
+.search-widget .fa:hover, .menu-icon:hover {
   cursor: pointer;
+  color: #23527c;
 }
 
 .react-autosuggest__container {
-
+  padding-right: 36px;
 }
 
 .react-autosuggest__container input {
@@ -198,4 +210,18 @@ html, body {
 
 .react-autosuggest__container li {
   padding: 8px 0px;
+}
+
+.mapboxgl-ctrl-bottom-left .mapboxgl-ctrl {
+  margin: 0;
+  float: left;
+}
+
+.mapboxgl-ctrl-group > button {
+  width: 36px;
+  height: 36px;
+}
+
+.mapboxgl-ctrl-group {
+  border-radius: 0;
 }

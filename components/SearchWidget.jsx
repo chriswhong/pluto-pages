@@ -27,6 +27,7 @@ const bounds = {
 const SearchWidget = React.createClass({
   propTypes: {
     onSelection: React.PropTypes.func,
+    onHide: React.PropTypes.func,
   },
 
   getInitialState() {
@@ -71,6 +72,7 @@ const SearchWidget = React.createClass({
   },
 
   toggleExpanded() {
+    if (this.state.expanded) this.props.onHide();
     this.setState({ expanded: !this.state.expanded });
   },
 

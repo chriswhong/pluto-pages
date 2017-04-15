@@ -36,7 +36,7 @@ const HomePage = React.createClass({
       hash: true,
     });
 
-    this.map.addControl(new mapboxgl.NavigationControl({ position: 'bottom-left' })); // eslint-disable-line no-undef
+    this.map.addControl(new mapboxgl.NavigationControl(), 'bottom-left'); // eslint-disable-line no-undef
 
     this.map.on('zoomend', () => {
       self.setState({ zoom: self.map.getZoom() });
@@ -90,8 +90,12 @@ const HomePage = React.createClass({
     this.map.flyTo({
       center: geojson.geometry.coordinates,
       zoom: 18,
-      speed: 0.5,
+      speed: 2,
     });
+  },
+
+  hideMarker() {
+    this.map.removeLayer('marker');
   },
 
   addPlutoVectorLayer(tileUrl) {
@@ -277,12 +281,106 @@ const HomePage = React.createClass({
       .css('left', event.clientX + 40);
   },
 
+  geolocate() {
+    if (navigator.geolocation) {
+      this.setState({ gettingLocation: true });
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.setState({ gettingLocation: false });
+        const { coords } = position;
+        const lngLat = [coords.longitude, coords.latitude];
+
+        this.map.flyTo({
+          center: lngLat,
+          zoom: 18,
+          speed: 2,
+        });
+
+        this.showMarker(lngLat);
+      });
+    }
+  },
+
+  showMarker(lngLat) {
+    if (this.map.getSource('location')) {
+      this.map.removeLayer('point');
+      this.map.removeLayer('point1');
+      this.map.removeSource('location');
+
+      if (this.timer) clearTimeout(this.timer);
+    }
+
+    // animation borrowed from https://bl.ocks.org/danswick/2f72bc392b65e77f6a9c
+    this.map.addSource('location', {
+      type: 'geojson',
+      data: {
+        type: 'Point',
+        coordinates: lngLat,
+      },
+    });
+
+    this.map.addLayer({
+      id: 'point',
+      source: 'location',
+      type: 'circle',
+      paint: {
+        'circle-radius': 8,
+        'circle-radius-transition': { duration: 0 },
+        'circle-opacity-transition': { duration: 0 },
+        'circle-color': '#E4FE13',
+      },
+    });
+
+    this.map.addLayer({
+      id: 'point1',
+      source: 'location',
+      type: 'circle',
+      paint: {
+        'circle-radius': 8,
+        'circle-color': '#E4FE13',
+      },
+    });
+
+
+    this.animateMarker();
+  },
+
+  animateMarker() {
+    const self = this;
+    const framesPerSecond = 15;
+    const initialOpacity = 1;
+    let opacity = initialOpacity;
+    const initialRadius = 8;
+    let radius = initialRadius;
+    const maxRadius = 18;
+
+    function doAnimation() {
+      self.timer = setTimeout(() => {
+        requestAnimationFrame(doAnimation);
+
+        radius += (maxRadius - radius) / framesPerSecond;
+        opacity -= (0.9 / framesPerSecond);
+
+        self.map.setPaintProperty('point', 'circle-radius', radius);
+        self.map.setPaintProperty('point', 'circle-opacity', opacity < 0 ? 0 : opacity);
+
+        if (opacity <= 0) {
+          radius = initialRadius;
+          opacity = initialOpacity;
+        }
+      }, 1000 / framesPerSecond);
+    }
+
+    doAnimation();
+  },
+
   render() {
-    const { zoom } = this.state;
+    const { zoom, gettingLocation } = this.state;
 
     const toastMessage = (zoom < 14) ?
       <p>Zoom in to select a tax lot</p> :
       <p>Click a tax lot to view data</p>;
+
+    const geolocateClass = gettingLocation ? 'fa fa-cog fa-spin fa-fw' : 'fa fa-crosshairs';
 
     return (
       <div className="main-container">
@@ -291,12 +389,18 @@ const HomePage = React.createClass({
           <p>NYC property data at your fingertips</p>
         </div>
 
-        <SearchWidget
-          onSelection={(selection) => { this.setMarker(selection); }}
-        />
+        <div className="button-pane">
+          <SearchWidget
+            onSelection={(selection) => { this.setMarker(selection); }}
+            onHide={this.hideMarker}
+          />
 
-        <a href="//github.com/chriswhong/pluto-pages"><div className="fa fa-github menu-icon" /></a>
+          <a href="//github.com/chriswhong/pluto-pages"><div className="fa fa-github menu-icon" /></a>
 
+          <div className="menu-icon" onClick={this.geolocate}>
+            <i className={geolocateClass} />
+          </div>
+        </div>
         <div className="toast">
           { toastMessage }
         </div>
